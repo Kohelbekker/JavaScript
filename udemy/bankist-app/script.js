@@ -32,6 +32,7 @@ const account4 = {
 const accounts = [account1, account2, account3, account4];
 
 let currentUser;
+let countdown;
 
 let sorted = false;
 
@@ -60,6 +61,30 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+
+/// FUNCTIONS
+
+const logoutCountdown = function () {
+  // 2 minutes
+  let timer = 120;
+
+  const secondsCounter = function () {
+    const minutes = String(Math.trunc(timer / 60)).padStart(2, 0);
+    const seconds = String(timer % 60).padStart(2, 0);
+    labelTimer.textContent = `${minutes}:${seconds}`;
+
+    timer--;
+
+    if (timer == 0) {
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = 'Log in to get started';
+      clearInterval(countdown);
+    }
+  };
+
+  secondsCounter();
+  countdown = setInterval(secondsCounter, 1000);
+};
 
 const renderMovements = function (account, sorted = false) {
   let movements = account.movements.slice();
@@ -131,6 +156,8 @@ const updateUI = function (user) {
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
 
+  logoutCountdown();
+
   const user = accounts.find(acc => acc.initials === inputLoginUsername.value);
   const pin = inputLoginPin.value;
 
@@ -165,6 +192,9 @@ btnTransfer.addEventListener('click', function (e) {
 
   inputTransferTo.value = inputTransferAmount.value = '';
 
+  clearInterval(countdown);
+  logoutCountdown();
+
   if (!receiver) {
     alert('User with such name not found!');
     return;
@@ -183,10 +213,6 @@ btnTransfer.addEventListener('click', function (e) {
   currentUser.movements.push(-transferAmount);
   receiver.movements.push(transferAmount);
   updateUI(currentUser);
-});
-
-btnLoan.addEventListener('click', function (e) {
-  e.preventDefault();
 });
 
 btnClose.addEventListener('click', function (e) {
@@ -212,6 +238,8 @@ btnClose.addEventListener('click', function (e) {
     return;
   }
 
+  clearInterval(countdown);
+
   const userIndex = accounts.findIndex(
     acc => acc.initials === currentUser.initials
   );
@@ -225,12 +253,18 @@ btnClose.addEventListener('click', function (e) {
 btnSort.addEventListener('click', function (e) {
   e.preventDefault();
 
+  clearInterval(countdown);
+  logoutCountdown();
+
   sorted = !sorted;
   renderMovements(currentUser, sorted);
 });
 
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
+
+  clearInterval(countdown);
+  logoutCountdown();
 
   const amount = Number(inputLoanAmount.value);
 
@@ -241,17 +275,3 @@ btnLoan.addEventListener('click', function (e) {
   }
   inputLoanAmount.value = '';
 });
-
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
-
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
-
-/////////////////////////////////////////////////
