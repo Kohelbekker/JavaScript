@@ -1,0 +1,14 @@
+{
+  "name": "map-app",
+  "version": "1.0.0",
+  "description": "workout tracking app",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kohelbekker",
+  "license": "ISC",
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  }
+}
